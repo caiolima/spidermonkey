@@ -1,0 +1,49 @@
+--- Recover.h
++++ Recover.h
+@@ -32,16 +32,17 @@ namespace jit {
+     _(Mod)                                      \
+     _(Concat)                                   \
+     _(Floor)                                    \
+     _(Round)                                    \
+     _(CharCodeAt)                               \
+     _(FromCharCode)                             \
+     _(Pow)                                      \
+     _(PowHalf)                                  \
++    _(ArgumentsLength)                          \
+     _(NewObject)                                \
+     _(NewDerivedTypedObject)
+ 
+ class RResumePoint;
+ class SnapshotIterator;
+ 
+ class RInstruction
+ {
+@@ -341,16 +342,28 @@ class RPowHalf MOZ_FINAL : public RInstr
+ 
+     virtual uint32_t numOperands() const {
+         return 1;
+     }
+ 
+     bool recover(JSContext *cx, SnapshotIterator &iter) const;
+ };
+ 
++class RArgumentsLength MOZ_FINAL : public RInstruction
++{
++  public:
++    RINSTRUCTION_HEADER_(ArgumentsLength)
++
++    virtual uint32_t numOperands() const {
++        return 0;
++    }
++
++    bool recover(JSContext *cx, SnapshotIterator &iter) const;
++};
++
+ class RNewObject MOZ_FINAL : public RInstruction
+ {
+   private:
+     bool templateObjectIsClassPrototype_;
+ 
+   public:
+     RINSTRUCTION_HEADER_(NewObject)
+ 

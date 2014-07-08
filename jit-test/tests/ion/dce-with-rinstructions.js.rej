@@ -1,0 +1,66 @@
+--- dce-with-rinstructions.js
++++ dce-with-rinstructions.js
+@@ -187,36 +187,62 @@ function rsub_object(i) {
+     var o = { valueOf: function () { return t; } };
+     var x = o - i; /* computed with t == i, not 1000 */
+     t = 1000;
+     if (uceFault_sub_object(i) || uceFault_sub_object(i))
+         assertEq(x, 0);
+     return i;
+ }
+ 
++var uceFault_concat_string = eval(uneval(uceFault).replace('uceFault', 'uceFault_concat_string'));
++function rconcat_string(i) {
++    var x = "s" + i.toString();
++    if (uceFault_concat_string(i) || uceFault_concat_string(i))
++        assertEq(x, "s99");
++    return i;
++}
++
++var uceFault_concat_number = eval(uneval(uceFault).replace('uceFault', 'uceFault_concat_number'));
++function rconcat_number(i) {
++    var x = "s" + i;
++    if (uceFault_concat_number(i) || uceFault_concat_number(i))
++        assertEq(x, "s99");
++    return i;
++}
++
++var uceFault_concat_float = eval(uneval(uceFault).replace('uceFault', 'uceFault_concat_float'));
++function rconcat_float(i) {
++    var x = "s" + i.toFixed(2);
++    if (uceFault_concat_float(i) || uceFault_concat_float(i))
++        assertEq(x, "s99.00");
++    return i;
++}
++
+ for (i = 0; i < 100; i++) {
+     rbitnot_number(i);
+     rbitnot_object(i);
+     rbitor_number(i);
+     rbitor_object(i);
+     rbitxor_number(i);
+     rbitxor_object(i);
+     rlsh_number(i);
+     rlsh_object(i);
+     rrsh_number(i);
+     rrsh_object(i);
+     rursh_number(i);
+     rursh_object(i);
+     radd_number(i);
+     radd_float(i);
+-    radd_string(i);
+     radd_object(i);
+     rsub_number(i);
+     rsub_float(i);
+     rsub_object(i);
++    rconcat_string(i);
++    rconcat_float(i);
++    rconcat_number(i);
+ }
+ 
+ // Test that we can refer multiple time to the same recover instruction, as well
+ // as chaining recover instructions.
+ 
+ function alignedAlloc($size, $alignment) {
+     var $1 = $size + 4 | 0;
+     var $2 = $alignment - 1 | 0;

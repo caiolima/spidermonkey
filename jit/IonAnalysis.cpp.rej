@@ -1,0 +1,24 @@
+--- IonAnalysis.cpp
++++ IonAnalysis.cpp
+@@ -2351,16 +2351,21 @@ ArgumentsUseCanBeLazy(JSContext *cx, JSS
+     }
+ 
+     // arguments[i] can read fp->canonicalActualArg(i) directly.
+     if (ins->isCallGetElement() && index == 0) {
+         *argumentsContentsObserved = true;
+         return true;
+     }
+ 
++    // MGetArgumentsObjectArg needs to be considered as an use that allows laziness
++    if (ins->isGetArgumentsObjectArg() && index == 0) {
++        return true;
++    }
++
+     // arguments.length length can read fp->numActualArgs() directly.
+     if (ins->isCallGetProperty() && index == 0 && ins->toCallGetProperty()->name() == cx->names().length)
+         return true;
+ 
+     return false;
+ }
+ 
+ bool
